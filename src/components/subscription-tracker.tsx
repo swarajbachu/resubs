@@ -59,6 +59,7 @@ export function SubscriptionTracker() {
   const [platform, setPlatform] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calendarDays, setCalendarDays] = useState<Date[]>([]);
+  const [openDatePicker, setOpenDatePicker] = useState(false);
 
   useEffect(() => {
     const year = currentMonth.getFullYear();
@@ -151,9 +152,12 @@ export function SubscriptionTracker() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="date">Date</Label>
-                <Popover>
+                <Popover open={openDatePicker} onOpenChange={setOpenDatePicker}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline">
+                    <Button
+                      variant="outline"
+                      onClick={() => setOpenDatePicker(true)}
+                    >
                       {date ? date.toLocaleDateString() : "Pick a date"}
                     </Button>
                   </PopoverTrigger>
