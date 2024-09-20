@@ -218,9 +218,6 @@ export function SubscriptionTracker() {
                 <Popover key={index}>
                   <PopoverTrigger asChild>
                     <div className="aspect-square rounded-lg bg-card p-2 flex flex-col items-center justify-between cursor-pointer">
-                      <span className="text-sm font-medium">
-                        {date.getDate()}
-                      </span>
                       <div className="flex flex-wrap gap-1 justify-center">
                         {subs.map((sub, subIndex) => {
                           const Icon =
@@ -234,6 +231,9 @@ export function SubscriptionTracker() {
                           );
                         })}
                       </div>
+                      <span className="text-sm font-medium">
+                        {date.getDate()}
+                      </span>
                     </div>
                   </PopoverTrigger>
                   {subs.length > 0 && (
