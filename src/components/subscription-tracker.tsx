@@ -257,7 +257,7 @@ export function SubscriptionTracker() {
                                 {sub.name}
                               </h4>
                               <div className="flex flex-row justify-between items-start  w-full">
-                                <div className="flex flex-col my-0">
+                                <div className="flex flex-col gap-2 mt-1">
                                   <span className="flex flex-row items-center space-x-2">
                                     <Icon /> <span>{sub.platform}</span>
                                   </span>
