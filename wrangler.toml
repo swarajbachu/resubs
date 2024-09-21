@@ -1,5 +1,5 @@
 #:schema node_modules/wrangler/config-schema.json
-name = "remainder-calendar"
+name = "resubs"
 compatibility_date = "2024-09-19"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
@@ -27,9 +27,10 @@ pages_build_output_dir = ".vercel/output/static"
 # Bind a D1 database. D1 is Cloudflare’s native serverless SQL database.
 # Docs: https://developers.cloudflare.com/pages/functions/bindings/#d1-databases
 [[d1_databases]]
-binding = "DB" # i.e. available in your Worker on env.DB
+binding = "DB"                                       # i.e. available in your Worker on env.DB
 database_name = "resubs"
 database_id = "4e863a73-c256-4bde-aed6-3cfd865f0ab1"
+migrations_dir = "drizzle"
 
 # Bind a Durable Object. Durable objects are a scale-to-zero compute primitive based on the actor model.
 # Durable Objects can live for as long as needed. Use these when you need a long-running "server", such as in realtime apps.
