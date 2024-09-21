@@ -1,5 +1,5 @@
-import ExpenseBreakdown from "@/components/expense-breakdown";
-import { SubscriptionTracker } from "@/components/subscription-tracker";
+import ExpenseBreakdown from "@/components/dashboard/expense-breakdown";
+import { SubscriptionTracker } from "@/components/dashboard/subscription-tracker";
 import Image from "next/image";
 
 export default function Home() {

@@ -7,6 +7,8 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { nanoid } from "nanoid";
 import type { AdapterAccountType } from "next-auth/adapters";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { z } from "zod";
 
 export const user = sqliteTable("user", {
   id: text("id")
@@ -120,6 +122,9 @@ export const subscriptions = sqliteTable("subscriptions", {
   description: text("description"),
   price: text("price").notNull(),
   billingCycle: text("billing_cycle").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   startDate: integer("start_date", {
     mode: "timestamp_ms",
   }).notNull(),
@@ -130,7 +135,6 @@ export const subscriptions = sqliteTable("subscriptions", {
     mode: "timestamp_ms",
   }),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  userId: integer("user_id").notNull(),
   createdAt: integer("created_at", {
     mode: "timestamp_ms",
   })
@@ -142,6 +146,15 @@ export const subscriptions = sqliteTable("subscriptions", {
     .notNull()
     .default(new Date()),
 });
+
+export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
+  user: one(user, { fields: [subscriptions.userId], references: [user.id] }),
+}));
+
+export const subscriptionInsertSchema = createInsertSchema(subscriptions);
+export type subscriptionInsertType = z.infer<typeof subscriptionInsertSchema>;
+export const subscriptionSelectSchema = createSelectSchema(subscriptions);
+export type subscriptionSelectType = z.infer<typeof subscriptionSelectSchema>;
 
 export const reminders = sqliteTable("reminders", {
   id: text("id")
@@ -167,3 +180,10 @@ export const reminders = sqliteTable("reminders", {
     .notNull()
     .default(new Date()),
 });
+
+export const reminderRelations = relations(reminders, ({ one }) => ({
+  subscription: one(subscriptions, {
+    fields: [reminders.subscriptionId],
+    references: [subscriptions.id],
+  }),
+}));
