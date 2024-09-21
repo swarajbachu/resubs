@@ -13,6 +13,8 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts"
   },
   "dependencies": {
+    "@auth/core": "^0.35.0",
+    "@auth/drizzle-adapter": "^1.5.0",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-label": "^2.1.0",
@@ -22,11 +24,16 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.33.0",
+    "id": "^0.0.0",
     "lucide-react": "^0.441.0",
+    "nano": "^10.1.4",
     "next": "14.2.5",
+    "next-auth": "5.0.0-beta.21",
     "react": "^18",
     "react-day-picker": "8.10.1",
     "react-dom": "^18",
+    "recharts": "^2.12.7",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
@@ -37,6 +44,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "drizzle-kit": "^0.24.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "eslint-plugin-next-on-pages": "^1.13.2",
