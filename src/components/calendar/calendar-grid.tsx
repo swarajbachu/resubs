@@ -59,7 +59,7 @@ export function CalendarGrid({
       {daysOfWeek.map((day) => (
         <div
           key={day}
-          className="text-center bg-card/70 rounded-md font-semibold text-sm py-2"
+          className="text-center bg-card/60 rounded-md font-medium text-sm py-2"
         >
           {day}
         </div>
@@ -69,7 +69,7 @@ export function CalendarGrid({
         return (
           <Popover key={date.toISOString()}>
             <PopoverTrigger asChild>
-              <div className="aspect-square rounded-lg bg-card p-2 flex flex-col items-center justify-between cursor-pointer">
+              <div className="aspect-[1/1.7] sm:aspect-square rounded-lg bg-card p-2 flex flex-col items-center justify-between cursor-pointer">
                 <div className="flex flex-wrap gap-1 justify-center">
                   {subs?.map((sub, subIndex) => {
                     const Icon =

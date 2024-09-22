@@ -11,7 +11,7 @@ export default function Spotify() {
         xmlSpace="preserve"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
-        className="w-10 h-10"
+        className="sm:size-10 size-6"
       >
         <g id="_x34__stroke">
           <g id="Spotify_1_">

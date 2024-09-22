@@ -67,7 +67,7 @@ export function SubscriptionTracker() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <div className="flex justify-between items-center mb-6 px-6">
+      <div className="flex justify-between sm:flex-row flex-col items-start gap-2 sm:items-center mb-2 sm:mb-6 sm:px-6">
         <CalendarHeader
           slideDirection={slideDirection}
           currentMonth={currentMonth}
@@ -76,8 +76,8 @@ export function SubscriptionTracker() {
         />
         <AddSubscriptionDialog onAddSubscription={addSubscription} />
       </div>
-      <Card className="bg-background overflow-hidden">
-        <CardContent>
+      <Card className="bg-background overflow-hidden shadow-none">
+        <CardContent className="sm:p-6 p-1">
           <CalendarSwitcher
             currentMonth={currentMonth}
             slideDirection={slideDirection}
@@ -129,8 +129,8 @@ function CalendarSwitcher({
       <motion.div
         key={currentMonth.toISOString()}
         animate={{ y: 0, opacity: 1 }}
-        initial={{ y: slideDirection === "up" ? "100%" : "-100%", opacity: 0 }}
-        exit={{ y: slideDirection === "up" ? "-100%" : "100%", opacity: 0 }}
+        initial={{ y: slideDirection === "up" ? "20%" : "-20%", opacity: 0 }}
+        exit={{ y: slideDirection === "up" ? "-20%" : "20%", opacity: 0 }}
         transition={{ type: "spring", stiffness: 100, damping: 20 }}
         drag="y"
         draggable

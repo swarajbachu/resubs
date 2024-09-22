@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useSpring, useTransform } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils"; // Adjust your import for cn utility if necessary
+import { useEffect } from "react";
 
 type CalendarHeaderProps = {
   currentMonth: Date;
@@ -15,45 +17,47 @@ export function CalendarHeader({
   onNextMonth,
   slideDirection,
 }: CalendarHeaderProps) {
+  // Create springs for month and year values
+  const monthSpring = useSpring(currentMonth.getMonth(), {
+    stiffness: 100,
+    damping: 20,
+  });
+  const yearSpring = useSpring(currentMonth.getFullYear(), {
+    stiffness: 100,
+    damping: 20,
+  });
+
+  // Transform the spring values to display
+  const monthDisplay = useTransform(monthSpring, (current) =>
+    new Date(0, Math.round(current)).toLocaleString("default", { month: "long" })
+  );
+  const yearDisplay = useTransform(yearSpring, (current) =>
+    Math.round(current).toString() // Removing the comma formatting
+  );
+
+  // Update springs when currentMonth changes
+  useEffect(() => {
+    monthSpring.set(currentMonth.getMonth());
+    yearSpring.set(currentMonth.getFullYear());
+  }, [currentMonth, monthSpring, yearSpring]);
+
   return (
     <div className="flex items-center space-x-4">
       <Button variant="outline" size="icon" onClick={onPrevMonth}>
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <AnimatePresence mode="wait">
-        <motion.h1
-          key={`${currentMonth.toLocaleString("default", {
-            month: "long",
-          })}-${slideDirection}`}
-          initial={{
-            filter: "blur(10px)",
-            y: slideDirection === "up" ? "100%" : "-100%",
-            opacity: 0,
-          }}
-          animate={{
-            filter: "blur(0px)",
-            y: 0,
-            opacity: 1,
-          }}
-          // exit={{
-          //   y: slideDirection === "left" ? "-100%" : "100%",
-          //   opacity: 0,
-          // }}
-          transition={{
-            type: "spring",
-            stiffness: 100,
-            damping: 20,
-            duration: 0.3,
-          }}
-          className="text-3xl font-bold space-x-2"
-        >
-          {currentMonth.toLocaleString("default", { month: "long" })}{" "}
-          {currentMonth.getFullYear()}
-        </motion.h1>
-      </AnimatePresence>
       <Button variant="outline" size="icon" onClick={onNextMonth}>
         <ChevronRight className="h-4 w-4" />
       </Button>
+      <h1 className="sm:text-3xl font-bold space-x-2">
+        <motion.span className={cn('tabular-nums')}>
+          {monthDisplay}
+        </motion.span>{" "}
+        <motion.span className={cn('tabular-nums')}>
+          {yearDisplay}
+        </motion.span>
+      </h1>
+  
     </div>
   );
 }

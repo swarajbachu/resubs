@@ -7,7 +7,7 @@ export default function YoutubeLogo() {
         version="1.1"
         viewBox="0 0 512 512"
         xmlSpace="preserve"
-        className="w-10 h-10"
+        className="sm:size-10 size-6"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
       >
