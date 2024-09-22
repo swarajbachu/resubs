@@ -52,7 +52,7 @@ export function SubscriptionTracker() {
         loading: "Adding subscription...",
         success: "Subscription added successfully!",
         error: "Failed to add subscription",
-      },
+      }
     );
   };
 
@@ -111,7 +111,7 @@ function CalendarSwitcher({
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleDragEnd = (event: any, info: any) => {
-    const threshold = 50; // Minimum distance to trigger month change
+    const threshold = 200; // Minimum distance to trigger month change
     setIsDragging(false);
 
     if (info.offset.y < -threshold) {
@@ -128,7 +128,8 @@ function CalendarSwitcher({
     <AnimatePresence mode="popLayout">
       <motion.div
         key={currentMonth.toISOString()}
-        animate={controls}
+        animate={{ y: 0, opacity: 1 }}
+        initial={{ y: slideDirection === "up" ? "100%" : "-100%", opacity: 0 }}
         exit={{ y: slideDirection === "up" ? "-100%" : "100%", opacity: 0 }}
         transition={{ type: "spring", stiffness: 100, damping: 20 }}
         drag="y"
