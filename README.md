@@ -26,7 +26,7 @@ Follow these steps to set up Resubs on your local machine and deploy it to Cloud
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/resubs.git
+   git clone https://github.com/swarajbachu/resubs.git
    cd resubs
    ```
 
