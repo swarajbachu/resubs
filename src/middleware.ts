@@ -19,7 +19,7 @@ export default auth((req) => {
 
   // Redirect logged-in users away from auth routes
   if (session && isAuthRoute) {
-    return NextResponse.redirect(new URL("/", nextUrl.origin));
+    return NextResponse.redirect(new URL("/dashboard", nextUrl.origin));
   }
 
   // Allow access to public routes regardless of auth status

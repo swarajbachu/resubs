@@ -50,7 +50,7 @@ export function SubscriptionTracker() {
   });
 
   const addSubscription = async (
-    newSubscription: subscriptionInsertTypeWithoutUserId
+    newSubscription: subscriptionInsertTypeWithoutUserId,
   ) => {
     setSubscriptions([...subscriptions, newSubscription]);
     toast.promise(
@@ -65,7 +65,7 @@ export function SubscriptionTracker() {
         loading: "Adding subscription...",
         success: "Subscription added successfully!",
         error: "Failed to add subscription",
-      }
+      },
     );
   };
 

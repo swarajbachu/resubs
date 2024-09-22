@@ -1,16 +1,22 @@
-import React from 'react'
-import { PieChart as RechartsPieChart, Pie, Cell, Legend, Tooltip } from 'recharts'
+import React from "react";
+import {
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  Legend,
+  Tooltip,
+} from "recharts";
 
 export interface PieChartItem {
-  name: string
-  value: number
+  name: string;
+  value: number;
 }
 
 interface PieChartProps {
-  data: PieChartItem[]
+  data: PieChartItem[];
 }
 
-const COLORS = ['#0ea5e9', '#0284c7', '#0369a1', '#075985', '#0c4a6e']
+const COLORS = ["#0ea5e9", "#0284c7", "#0369a1", "#075985", "#0c4a6e"];
 
 export function PieChart({ data }: PieChartProps) {
   return (
@@ -25,11 +31,14 @@ export function PieChart({ data }: PieChartProps) {
         dataKey="value"
       >
         {data.map((entry, index) => (
-          <Cell key={`cell-${entry.value}`} fill={COLORS[index % COLORS.length]} />
+          <Cell
+            key={`cell-${entry.value}`}
+            fill={COLORS[index % COLORS.length]}
+          />
         ))}
       </Pie>
       <Tooltip />
       <Legend />
     </RechartsPieChart>
-  )
+  );
 }

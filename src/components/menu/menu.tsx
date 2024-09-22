@@ -7,6 +7,7 @@ import useClickOutside from "./useClickOutside";
 import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { signOutAction } from "@/server/actions/auth-actions";
 
 const TRANSITION = {
   type: "spring",
@@ -27,7 +28,6 @@ export default function Component() {
     setTheme(theme === "dark" ? "light" : "dark");
     setIsDarkMode(!isDarkMode);
   };
-  const toggleLogin = () => setIsLoggedIn(!isLoggedIn);
 
   useClickOutside(menuRef, () => {
     if (isOpen) setIsOpen(false);
@@ -109,10 +109,10 @@ export default function Component() {
                 <li>
                   <button
                     type="button"
-                    onClick={toggleLogin}
+                    onClick={() => signOutAction()}
                     className="flex items-center w-full px-3 py-2 text-sm text-left text-card-foreground hover:bg-card-foreground/10 rounded-md p-2"
                   >
-                    {isLoggedIn ? (
+                    {/* {isLoggedIn ? (
                       <>
                         <LogOut size={18} className="mr-2" />
                         Sign Out
@@ -122,7 +122,9 @@ export default function Component() {
                         <LogIn size={18} className="mr-2" />
                         Sign In
                       </>
-                    )}
+                    )} */}
+                    <LogOut size={18} className="mr-2" />
+                    Sign Out
                   </button>
                 </li>
               </motion.ul>
