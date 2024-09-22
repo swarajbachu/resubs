@@ -153,6 +153,11 @@ export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
 
 export const subscriptionInsertSchema = createInsertSchema(subscriptions);
 export type subscriptionInsertType = z.infer<typeof subscriptionInsertSchema>;
+export type subscriptionInsertTypeWithoutUserId = Omit<
+  subscriptionInsertType,
+  "userId"
+>;
+
 export const subscriptionSelectSchema = createSelectSchema(subscriptions);
 export type subscriptionSelectType = z.infer<typeof subscriptionSelectSchema>;
 

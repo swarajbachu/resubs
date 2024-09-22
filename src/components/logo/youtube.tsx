@@ -1,13 +1,14 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 
-export default function YoutubeLogo() {
+export default function YoutubeLogo({ className }: { className?: string }) {
   return (
     <>
       <svg
         version="1.1"
         viewBox="0 0 512 512"
         xmlSpace="preserve"
-        className="sm:size-10 size-6"
+        className={cn("size-5 sm:size-10", className)}
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
       >

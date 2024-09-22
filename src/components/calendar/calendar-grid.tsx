@@ -8,9 +8,11 @@ import Spotify from "@/components/logo/spotify";
 import YoutubeLogo from "@/components/logo/youtube";
 import AppleLogo from "@/components/logo/apple";
 import GameLogo from "@/components/logo/game";
+import SubscriptionDetails from "./subscription-details";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import type { subscriptionSelectType } from "@/server/db/schema";
 import { useQuery } from "@tanstack/react-query";
 import { getAllSubscriptions } from "@/server/actions/subscriptions";
-import type { subscriptionSelectType } from "@/server/db/schema";
 
 const platformIcons = {
   netflix: NetflixLogo,
@@ -24,20 +26,13 @@ const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 type CalendarGridProps = {
   calendarDays: Date[];
-  subscriptions: {
-    name: string;
-    price: number;
-    date: Date;
-    platform: string;
-  }[];
+  // subscriptions: subscriptionSelectType[];
   isDragging: boolean;
 };
 
-export function CalendarGrid({
-  calendarDays,
-  subscriptions,
-  isDragging,
-}: CalendarGridProps) {
+export function CalendarGrid({ calendarDays, isDragging }: CalendarGridProps) {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+
   const { data: allSubscriptions } = useQuery({
     queryKey: ["subscriptions"],
     queryFn: () => getAllSubscriptions(),
@@ -49,69 +44,66 @@ export function CalendarGrid({
     );
   };
 
-  console.log(
-    isSubscriptionActiveOnDate(allSubscriptions?.[0], new Date(1726919872627)),
-    "isActive",
-  );
+  const renderSubscriptionIcons = (
+    subs: subscriptionSelectType[] | undefined,
+  ) => {
+    const maxIcons = isMobile ? 1 : 3;
+    const iconsToShow = subs?.slice(0, maxIcons);
+    const remainingCount = subs ? subs.length - maxIcons : 0;
+
+    if (!iconsToShow) return null;
+
+    return (
+      <>
+        {iconsToShow.map((sub) => {
+          const Icon =
+            platformIcons[sub.platform as keyof typeof platformIcons];
+          return (
+            <div key={sub.id} className="w-6 h-6">
+              <Icon className="sm:w-6" />
+            </div>
+          );
+        })}
+        {remainingCount > 0 && (
+          <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+            +{remainingCount}
+          </div>
+        )}
+      </>
+    );
+  };
 
   return (
     <div className="grid grid-cols-7 gap-2">
       {daysOfWeek.map((day) => (
         <div
           key={day}
-          className="text-center bg-card/60 rounded-md font-medium text-sm py-2"
+          className="text-center bg-card/70 rounded-md font-semibold text-sm py-2"
         >
           {day}
         </div>
       ))}
-      {calendarDays.map((date, index) => {
+      {calendarDays.map((date) => {
         const subs = getSubscriptionsForDate(date);
+        const hasSubscriptions = subs && subs.length > 0;
+
         return (
           <Popover key={date.toISOString()}>
             <PopoverTrigger asChild>
-              <div className="aspect-[1/1.7] sm:aspect-square rounded-lg bg-card p-2 flex flex-col items-center justify-between cursor-pointer">
+              <div
+                className={`aspect-[1/1.7] sm:aspect-square rounded-lg bg-card p-2 flex flex-col items-center justify-between ${
+                  hasSubscriptions ? "cursor-pointer" : ""
+                }`}
+              >
                 <div className="flex flex-wrap gap-1 justify-center">
-                  {subs?.map((sub, subIndex) => {
-                    const Icon =
-                      platformIcons[sub.platform as keyof typeof platformIcons];
-                    return (
-                      <div key={sub.name}>
-                        <Icon />
-                      </div>
-                    );
-                  })}
+                  {renderSubscriptionIcons(subs)}
                 </div>
                 <span className="text-sm font-medium">{date.getDate()}</span>
               </div>
             </PopoverTrigger>
-            {!isDragging && subs && subs.length > 0 && (
-              <PopoverContent className="w-64">
-                <div className="grid gap-2">
-                  {subs.map((sub, subIndex) => {
-                    const Icon =
-                      platformIcons[sub.platform as keyof typeof platformIcons];
-                    return (
-                      <div
-                        key={sub.name}
-                        className="flex flex-col justify-between items-start w-full"
-                      >
-                        <h4 className="text-sm font-medium">{sub.name}</h4>
-                        <div className="flex flex-row justify-between items-start w-full">
-                          <div className="flex flex-col gap-2 mt-1">
-                            <span className="flex flex-row items-center space-x-2">
-                              <Icon /> <span>{sub.platform}</span>
-                            </span>
-                            <span className="text-muted-foreground text-xs">
-                              every month on {sub.startDate.getDate()}{" "}
-                              {nthNumber(sub.startDate.getDate())}
-                            </span>
-                          </div>
-                          <span className="mt-2">${sub.price}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+            {!isDragging && hasSubscriptions && (
+              <PopoverContent className="p-0 w-full max-w-md">
+                <SubscriptionDetails subscriptions={subs} />
               </PopoverContent>
             )}
           </Popover>

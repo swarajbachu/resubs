@@ -10,16 +10,16 @@ import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
-
-type Subscription = {
-  name: string;
-  price: number;
-  date: Date;
-  platform: string;
-};
+import type {
+  subscriptionInsertType,
+  subscriptionInsertTypeWithoutUserId,
+  subscriptionSelectType,
+} from "@/server/db/schema";
 
 export function SubscriptionTracker() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [subscriptions, setSubscriptions] = useState<
+    subscriptionInsertTypeWithoutUserId[]
+  >([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calendarDays, setCalendarDays] = useState<Date[]>([]);
   const [slideDirection, setSlideDirection] = useState<"up" | "down">("down");
@@ -38,12 +38,14 @@ export function SubscriptionTracker() {
     setCalendarDays(days);
   }, [currentMonth]);
 
-  const addSubscription = async (newSubscription: Subscription) => {
+  const addSubscription = async (
+    newSubscription: subscriptionInsertTypeWithoutUserId,
+  ) => {
     setSubscriptions([...subscriptions, newSubscription]);
     toast.promise(
       addSubscriptions({
         billingCycle: "monthly",
-        startDate: new Date(),
+        startDate: newSubscription.startDate,
         name: newSubscription.name,
         price: newSubscription.price.toString(),
         platform: newSubscription.platform,
@@ -52,7 +54,7 @@ export function SubscriptionTracker() {
         loading: "Adding subscription...",
         success: "Subscription added successfully!",
         error: "Failed to add subscription",
-      }
+      },
     );
   };
 
@@ -82,7 +84,7 @@ export function SubscriptionTracker() {
             currentMonth={currentMonth}
             slideDirection={slideDirection}
             calendarDays={calendarDays}
-            subscriptions={subscriptions}
+            // subscriptions={subscriptions}
             onChangeMonth={changeMonth}
           />
         </CardContent>
@@ -95,7 +97,7 @@ interface CalendarSwitcherProps {
   currentMonth: Date;
   slideDirection: "up" | "down";
   calendarDays: Date[];
-  subscriptions: Subscription[];
+  // subscriptions: subscriptionSelectType[];
   onChangeMonth: (increment: number) => void;
 }
 
@@ -103,7 +105,6 @@ function CalendarSwitcher({
   currentMonth,
   slideDirection,
   calendarDays,
-  subscriptions,
   onChangeMonth,
 }: CalendarSwitcherProps) {
   const controls = useAnimation();
@@ -142,7 +143,7 @@ function CalendarSwitcher({
       >
         <CalendarGrid
           calendarDays={calendarDays}
-          subscriptions={subscriptions}
+          // subscriptions={subscriptions}
           isDragging={isDragging}
         />
       </motion.div>

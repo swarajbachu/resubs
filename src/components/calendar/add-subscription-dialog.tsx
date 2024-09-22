@@ -24,14 +24,12 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Plus } from "lucide-react";
+import type { subscriptionInsertType } from "@/server/db/schema";
 
 type AddSubscriptionDialogProps = {
-  onAddSubscription: (subscription: {
-    name: string;
-    price: number;
-    date: Date;
-    platform: string;
-  }) => void;
+  onAddSubscription: (
+    subscription: Omit<subscriptionInsertType, "userId">,
+  ) => void;
 };
 
 export function AddSubscriptionDialog({
@@ -44,11 +42,14 @@ export function AddSubscriptionDialog({
   const [openDatePicker, setOpenDatePicker] = useState(false);
 
   const handleAddSubscription = () => {
+    console.log(name, price, date, platform);
     if (name && price && date && platform) {
       onAddSubscription({
+        billingCycle: "monthly",
+
         name,
-        price: Number.parseFloat(price),
-        date,
+        price: price,
+        startDate: date,
         platform,
       });
       setName("");

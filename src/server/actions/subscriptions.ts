@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import {
   subscriptionInsertSchema,
   type subscriptionInsertType,
+  type subscriptionInsertTypeWithoutUserId,
   subscriptions,
 } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
@@ -11,7 +12,7 @@ import { auth } from "@/server/auth";
 import { google } from "googleapis";
 
 export async function addSubscriptions(
-  formData: Omit<subscriptionInsertType, "userId">,
+  formData: subscriptionInsertTypeWithoutUserId,
 ) {
   const session = await auth();
   if (!session) {

@@ -1,6 +1,7 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 
-export default function Spotify() {
+export default function Spotify({ className }: { className?: string }) {
   return (
     <>
       {/*?xml version="1.0" ?*/}
@@ -11,7 +12,7 @@ export default function Spotify() {
         xmlSpace="preserve"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
-        className="sm:size-10 size-6"
+        className={cn("size-5 sm:size-10", className)}
       >
         <g id="_x34__stroke">
           <g id="Spotify_1_">

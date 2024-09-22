@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { AnimatePresence, motion, useSpring, useTransform } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils"; // Adjust your import for cn utility if necessary
 import { useEffect } from "react";
@@ -29,10 +34,13 @@ export function CalendarHeader({
 
   // Transform the spring values to display
   const monthDisplay = useTransform(monthSpring, (current) =>
-    new Date(0, Math.round(current)).toLocaleString("default", { month: "long" })
+    new Date(0, Math.round(current)).toLocaleString("default", {
+      month: "long",
+    }),
   );
-  const yearDisplay = useTransform(yearSpring, (current) =>
-    Math.round(current).toString() // Removing the comma formatting
+  const yearDisplay = useTransform(
+    yearSpring,
+    (current) => Math.round(current).toString(), // Removing the comma formatting
   );
 
   // Update springs when currentMonth changes
@@ -50,14 +58,9 @@ export function CalendarHeader({
         <ChevronRight className="h-4 w-4" />
       </Button>
       <h1 className="sm:text-3xl font-bold space-x-2">
-        <motion.span className={cn('tabular-nums')}>
-          {monthDisplay}
-        </motion.span>{" "}
-        <motion.span className={cn('tabular-nums')}>
-          {yearDisplay}
-        </motion.span>
+        <motion.span className={cn("tabular-nums")}>{monthDisplay}</motion.span>{" "}
+        <motion.span className={cn("tabular-nums")}>{yearDisplay}</motion.span>
       </h1>
-  
     </div>
   );
 }
