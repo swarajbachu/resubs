@@ -15,6 +15,7 @@ import type {
   subscriptionInsertTypeWithoutUserId,
   subscriptionSelectType,
 } from "@/server/db/schema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function SubscriptionTracker() {
   const [subscriptions, setSubscriptions] = useState<
@@ -38,12 +39,22 @@ export function SubscriptionTracker() {
     setCalendarDays(days);
   }, [currentMonth]);
 
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: addSubscriptionMutation, isPending } = useMutation({
+    mutationFn: (subscription: subscriptionInsertTypeWithoutUserId) =>
+      addSubscriptions(subscription),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+    },
+  });
+
   const addSubscription = async (
-    newSubscription: subscriptionInsertTypeWithoutUserId,
+    newSubscription: subscriptionInsertTypeWithoutUserId
   ) => {
     setSubscriptions([...subscriptions, newSubscription]);
     toast.promise(
-      addSubscriptions({
+      addSubscriptionMutation({
         billingCycle: "monthly",
         startDate: newSubscription.startDate,
         name: newSubscription.name,
@@ -54,7 +65,7 @@ export function SubscriptionTracker() {
         loading: "Adding subscription...",
         success: "Subscription added successfully!",
         error: "Failed to add subscription",
-      },
+      }
     );
   };
 

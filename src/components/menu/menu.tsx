@@ -6,6 +6,7 @@ import { Twitter, Moon, Sun, LogIn, LogOut, X, Menu } from "lucide-react";
 import useClickOutside from "./useClickOutside";
 import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 
 const TRANSITION = {
   type: "spring",
@@ -83,17 +84,13 @@ export default function Component() {
                 className="space-y-2"
               >
                 <li>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      console.log("Share on Twitter");
-                      // Add your Twitter share logic here
-                    }}
+                  <Link
+                    href="https://twitter.com/intent/tweet?text=subscription%20tracking%20is%20difficult%2C%20but%20I%20have%20found%20this%20amazing%20cool%20tool%20https%3A%2F%2Fresub.gesturs.com"
                     className="flex items-center w-full px-3 py-2 text-sm text-left text-card-foreground hover:bg-card-foreground/10 rounded-md p-2"
                   >
                     <Twitter size={18} className="mr-2" />
                     Share on Twitter
-                  </button>
+                  </Link>
                 </li>
                 <li>
                   <button
