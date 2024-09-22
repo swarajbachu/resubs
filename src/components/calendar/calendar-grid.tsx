@@ -30,11 +30,13 @@ type CalendarGridProps = {
     date: Date;
     platform: string;
   }[];
+  isDragging: boolean;
 };
 
 export function CalendarGrid({
   calendarDays,
   subscriptions,
+  isDragging,
 }: CalendarGridProps) {
   const { data: allSubscriptions } = useQuery({
     queryKey: ["subscriptions"],
@@ -82,7 +84,7 @@ export function CalendarGrid({
                 <span className="text-sm font-medium">{date.getDate()}</span>
               </div>
             </PopoverTrigger>
-            {subs && subs.length > 0 && (
+            {!isDragging && subs && subs.length > 0 && (
               <PopoverContent className="w-64">
                 <div className="grid gap-2">
                   {subs.map((sub, subIndex) => {

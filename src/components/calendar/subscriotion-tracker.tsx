@@ -9,7 +9,7 @@ import { addSubscriptions } from "@/server/actions/subscriptions";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useAnimation } from "framer-motion";
 
 type Subscription = {
   name: string;
@@ -22,13 +22,7 @@ export function SubscriptionTracker() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calendarDays, setCalendarDays] = useState<Date[]>([]);
-  const [slideDirection, setSlideDirection] = useState<"left" | "right">(
-    "left",
-  );
-
-  useEffect(() => {
-    console.log("slideDirection updated to:", slideDirection);
-  }, [slideDirection]);
+  const [slideDirection, setSlideDirection] = useState<"up" | "down">("down");
 
   useEffect(() => {
     const year = currentMonth.getFullYear();
@@ -63,8 +57,7 @@ export function SubscriptionTracker() {
   };
 
   const changeMonth = (increment: number) => {
-    setSlideDirection(increment > 0 ? "left" : "right");
-    console.log(slideDirection, "slideDirection");
+    setSlideDirection(increment > 0 ? "up" : "down");
     setCurrentMonth((prevMonth) => {
       const newMonth = new Date(prevMonth);
       newMonth.setMonth(newMonth.getMonth() + increment);
@@ -76,8 +69,8 @@ export function SubscriptionTracker() {
     <div className="container mx-auto p-4 max-w-4xl">
       <div className="flex justify-between items-center mb-6 px-6">
         <CalendarHeader
-          currentMonth={currentMonth}
           slideDirection={slideDirection}
+          currentMonth={currentMonth}
           onPrevMonth={() => changeMonth(-1)}
           onNextMonth={() => changeMonth(1)}
         />
@@ -90,6 +83,7 @@ export function SubscriptionTracker() {
             slideDirection={slideDirection}
             calendarDays={calendarDays}
             subscriptions={subscriptions}
+            onChangeMonth={changeMonth}
           />
         </CardContent>
       </Card>
@@ -99,9 +93,10 @@ export function SubscriptionTracker() {
 
 interface CalendarSwitcherProps {
   currentMonth: Date;
-  slideDirection: "left" | "right";
+  slideDirection: "up" | "down";
   calendarDays: Date[];
   subscriptions: Subscription[];
+  onChangeMonth: (increment: number) => void;
 }
 
 function CalendarSwitcher({
@@ -109,30 +104,45 @@ function CalendarSwitcher({
   slideDirection,
   calendarDays,
   subscriptions,
+  onChangeMonth,
 }: CalendarSwitcherProps) {
+  const controls = useAnimation();
+  const [isDragging, setIsDragging] = useState(false);
+
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const handleDragEnd = (event: any, info: any) => {
+    const threshold = 50; // Minimum distance to trigger month change
+    setIsDragging(false);
+
+    if (info.offset.y < -threshold) {
+      onChangeMonth(1); // Swipe up, go to next month
+    } else if (info.offset.y > threshold) {
+      onChangeMonth(-1); // Swipe down, go to previous month
+    } else {
+      // If the drag didn't exceed the threshold, animate back to the starting position
+      controls.start({ y: 0 });
+    }
+  };
+
   return (
     <AnimatePresence mode="popLayout">
       <motion.div
-        key={`${currentMonth.toISOString()}-${slideDirection}`} // Include slideDirection in the key
-        initial={{
-          y: slideDirection === "left" ? "-50%" : "50%",
-          opacity: 0,
-        }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{
-          y: slideDirection === "left" ? "50%" : "-50%",
-          opacity: 0,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 100,
-          damping: 20,
-          duration: 0.3,
-        }}
+        key={currentMonth.toISOString()}
+        animate={controls}
+        exit={{ y: slideDirection === "up" ? "-100%" : "100%", opacity: 0 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        drag="y"
+        draggable
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={0.1}
+        onDragStart={() => setIsDragging(true)}
+        onDragEnd={handleDragEnd}
+        style={{ touchAction: "none" }}
       >
         <CalendarGrid
           calendarDays={calendarDays}
           subscriptions={subscriptions}
+          isDragging={isDragging}
         />
       </motion.div>
     </AnimatePresence>

@@ -6,7 +6,7 @@ type CalendarHeaderProps = {
   currentMonth: Date;
   onPrevMonth: () => void;
   onNextMonth: () => void;
-  slideDirection: "left" | "right";
+  slideDirection: "up" | "down";
 };
 
 export function CalendarHeader({
@@ -27,7 +27,7 @@ export function CalendarHeader({
           })}-${slideDirection}`}
           initial={{
             filter: "blur(10px)",
-            y: slideDirection === "left" ? "100%" : "-100%",
+            y: slideDirection === "up" ? "100%" : "-100%",
             opacity: 0,
           }}
           animate={{
