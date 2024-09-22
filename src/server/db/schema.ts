@@ -119,9 +119,9 @@ export const authenticators = sqliteTable(
 export const subscriptions = sqliteTable("subscriptions", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
-  description: text("description"),
   price: text("price").notNull(),
   billingCycle: text("billing_cycle").notNull(),
+  platform: text("platform").notNull(),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

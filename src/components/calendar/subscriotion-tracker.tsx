@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { addSubscriptions } from "@/server/actions/subscription";
+import { addSubscriptions } from "@/server/actions/subscriptions";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
@@ -52,7 +52,7 @@ export function SubscriptionTracker() {
         startDate: new Date(),
         name: newSubscription.name,
         price: newSubscription.price.toString(),
-        description: newSubscription.platform,
+        platform: newSubscription.platform,
       }),
       {
         loading: "Adding subscription...",

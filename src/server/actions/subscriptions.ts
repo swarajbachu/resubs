@@ -79,3 +79,22 @@ export async function addSubscriptions(
     return { success: false, error: "Failed to add subscription" };
   }
 }
+
+export async function getAllSubscriptions() {
+  const session = await auth();
+  if (!session) {
+    throw new Error("You must be logged in to add a subscription");
+  }
+  if (!session.user) {
+    throw new Error("You must be logged in to add a subscription");
+  }
+  if (!session.user.id) {
+    throw new Error("You must be logged in to add a subscription");
+  }
+
+  const allSubscriptions = await db.query.subscriptions.findMany({
+    where: eq(subscriptions.userId, session.user.id),
+  });
+
+  return allSubscriptions;
+}

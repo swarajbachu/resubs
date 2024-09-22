@@ -8,6 +8,9 @@ import Spotify from "@/components/logo/spotify";
 import YoutubeLogo from "@/components/logo/youtube";
 import AppleLogo from "@/components/logo/apple";
 import GameLogo from "@/components/logo/game";
+import { useQuery } from "@tanstack/react-query";
+import { getAllSubscriptions } from "@/server/actions/subscriptions";
+import type { subscriptionSelectType } from "@/server/db/schema";
 
 const platformIcons = {
   netflix: NetflixLogo,
@@ -33,13 +36,21 @@ export function CalendarGrid({
   calendarDays,
   subscriptions,
 }: CalendarGridProps) {
+  const { data: allSubscriptions } = useQuery({
+    queryKey: ["subscriptions"],
+    queryFn: () => getAllSubscriptions(),
+  });
+
   const getSubscriptionsForDate = (date: Date) => {
-    return subscriptions.filter(
-      (sub) =>
-        sub.date.getDate() === date.getDate() &&
-        sub.date.getMonth() === date.getMonth(),
+    return allSubscriptions?.filter((sub) =>
+      isSubscriptionActiveOnDate(sub, date),
     );
   };
+
+  console.log(
+    isSubscriptionActiveOnDate(allSubscriptions?.[0], new Date(1726919872627)),
+    "isActive",
+  );
 
   return (
     <div className="grid grid-cols-7 gap-2">
@@ -58,7 +69,7 @@ export function CalendarGrid({
             <PopoverTrigger asChild>
               <div className="aspect-square rounded-lg bg-card p-2 flex flex-col items-center justify-between cursor-pointer">
                 <div className="flex flex-wrap gap-1 justify-center">
-                  {subs.map((sub, subIndex) => {
+                  {subs?.map((sub, subIndex) => {
                     const Icon =
                       platformIcons[sub.platform as keyof typeof platformIcons];
                     return (
@@ -71,7 +82,7 @@ export function CalendarGrid({
                 <span className="text-sm font-medium">{date.getDate()}</span>
               </div>
             </PopoverTrigger>
-            {subs.length > 0 && (
+            {subs && subs.length > 0 && (
               <PopoverContent className="w-64">
                 <div className="grid gap-2">
                   {subs.map((sub, subIndex) => {
@@ -89,11 +100,11 @@ export function CalendarGrid({
                               <Icon /> <span>{sub.platform}</span>
                             </span>
                             <span className="text-muted-foreground text-xs">
-                              every month on {sub.date.getDate()}{" "}
-                              {nthNumber(sub.date.getDate())}
+                              every month on {sub.startDate.getDate()}{" "}
+                              {nthNumber(sub.startDate.getDate())}
                             </span>
                           </div>
-                          <span className="mt-2">${sub.price.toFixed(2)}</span>
+                          <span className="mt-2">${sub.price}</span>
                         </div>
                       </div>
                     );
@@ -107,6 +118,50 @@ export function CalendarGrid({
     </div>
   );
 }
+
+const isSubscriptionActiveOnDate = (
+  subscription: subscriptionSelectType | undefined,
+  date: Date,
+): boolean => {
+  if (!subscription) return false;
+  const startDate = new Date(subscription.startDate);
+  const endDate = subscription.endDate ? new Date(subscription.endDate) : null;
+
+  if (isSameDay(date, startDate)) {
+    return true;
+  }
+
+  // Check if the date is within the overall subscription period
+  if (date < startDate || (endDate && date > endDate)) {
+    console.log("not in range for ", date);
+    return false;
+  }
+
+  // For monthly subscriptions
+  if (subscription.billingCycle === "monthly") {
+    // Check if the day of the month matches the start date
+    return date.getDate() === startDate.getDate();
+  }
+
+  // For yearly subscriptions
+  if (subscription.billingCycle === "yearly") {
+    // Check if the month and day match the start date
+    return (
+      date.getMonth() === startDate.getMonth() &&
+      date.getDate() === startDate.getDate()
+    );
+  }
+
+  return false; // For any other billing cycle types
+};
+
+const isSameDay = (date1: Date, date2: Date): boolean => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+};
 
 const nthNumber = (number: number) => {
   if (number > 3 && number < 21) return "th";

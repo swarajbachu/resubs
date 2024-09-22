@@ -15,6 +15,13 @@
       "when": 1726914812024,
       "tag": "0001_colorful_nick_fury",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1726976739058,
+      "tag": "0002_goofy_champions",
+      "breakpoints": true
     }
   ]
 }

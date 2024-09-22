@@ -105,7 +105,7 @@ export function SubscriptionTracker() {
         startDate: new Date(),
         name,
         price,
-        description: platform,
+        platform,
       }),
       {
         loading: "Adding subscription...",
