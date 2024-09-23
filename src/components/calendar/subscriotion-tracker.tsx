@@ -54,7 +54,7 @@ export function SubscriptionTracker() {
   });
 
   const addSubscription = async (
-    newSubscription: subscriptionInsertTypeWithoutUserId
+    newSubscription: subscriptionInsertTypeWithoutUserId,
   ) => {
     setSubscriptions([...subscriptions, newSubscription]);
     toast.promise(addSubscriptionMutation(newSubscription), {
@@ -63,8 +63,6 @@ export function SubscriptionTracker() {
       error: "Failed to add subscription",
     });
   };
-
-
 
   const changeMonth = (increment: number) => {
     setSlideDirection(increment > 0 ? "up" : "down");

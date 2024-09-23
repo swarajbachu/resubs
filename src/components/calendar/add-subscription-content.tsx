@@ -1,14 +1,34 @@
-import React from 'react';
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Check, CalendarIcon } from "lucide-react";
 import { PriceInput } from "@/components/ui/currency-input";
-import type { subscriptionInsertTypeWithoutUserId, subscriptionSelectType } from "@/server/db/schema";
+import type {
+  subscriptionInsertTypeWithoutUserId,
+  subscriptionSelectType,
+} from "@/server/db/schema";
 import NetflixLogo from "@/components/logo/netflix";
 import Spotify from "@/components/logo/spotify";
 import YoutubeLogo from "@/components/logo/youtube";
@@ -108,9 +128,7 @@ export function SubscriptionFormContent({
             className="w-full justify-start text-left font-normal"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {startDate
-              ? startDate.toLocaleDateString()
-              : "Pick a start date"}
+            {startDate ? startDate.toLocaleDateString() : "Pick a start date"}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -136,10 +154,7 @@ export function SubscriptionFormContent({
         />
       </div>
       {!isOngoing && (
-        <Popover
-          open={openEndDatePicker}
-          onOpenChange={setOpenEndDatePicker}
-        >
+        <Popover open={openEndDatePicker} onOpenChange={setOpenEndDatePicker}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -162,10 +177,7 @@ export function SubscriptionFormContent({
           </PopoverContent>
         </Popover>
       )}
-      <Popover
-        open={openPlatformSelect}
-        onOpenChange={setOpenPlatformSelect}
-      >
+      <Popover open={openPlatformSelect} onOpenChange={setOpenPlatformSelect}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -198,9 +210,7 @@ export function SubscriptionFormContent({
                     {option.label}
                     <Check
                       className={`ml-auto h-4 w-4 ${
-                        platform === option.value
-                          ? "opacity-100"
-                          : "opacity-0"
+                        platform === option.value ? "opacity-100" : "opacity-0"
                       }`}
                     />
                   </CommandItem>

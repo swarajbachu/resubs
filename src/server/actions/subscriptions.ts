@@ -12,7 +12,7 @@ import { auth } from "@/server/auth";
 import { google } from "googleapis";
 
 export async function addSubscriptions(
-  formData: subscriptionInsertTypeWithoutUserId
+  formData: subscriptionInsertTypeWithoutUserId,
 ) {
   const session = await auth();
   if (!session) {
@@ -117,7 +117,7 @@ export async function deleteSubscription(id: string) {
 
 export async function updateSubscription(
   id: string,
-  formData: subscriptionInsertTypeWithoutUserId
+  formData: subscriptionInsertTypeWithoutUserId,
 ) {
   const session = await auth();
   if (!session) {

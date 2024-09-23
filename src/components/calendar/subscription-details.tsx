@@ -59,7 +59,7 @@ function SubscriptionCard({
   onDelete: (id: string) => void;
 }) {
   const [totalSpent, setTotalSpent] = useState(
-    calculateTotalSpent(subscription)
+    calculateTotalSpent(subscription),
   );
 
   function calculateTotalSpent(sub: subscriptionSelectType) {
@@ -173,7 +173,7 @@ export default function SubscriptionDetails({
 }: {
   subscriptions: subscriptionSelectType[];
   onUpdateSubscription: (
-    subscription: subscriptionInsertTypeWithoutUserId
+    subscription: subscriptionInsertTypeWithoutUserId,
   ) => void;
   onDeleteSubscription: (id: string) => void;
 }) {
@@ -185,7 +185,7 @@ export default function SubscriptionDetails({
   };
 
   const handleUpdate = (
-    updatedSubscription: subscriptionInsertTypeWithoutUserId
+    updatedSubscription: subscriptionInsertTypeWithoutUserId,
   ) => {
     if (editingSubscription) {
       onUpdateSubscription({

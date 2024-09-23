@@ -15,13 +15,16 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Plus } from "lucide-react";
-import type { subscriptionInsertTypeWithoutUserId, subscriptionSelectType } from "@/server/db/schema";
+import type {
+  subscriptionInsertTypeWithoutUserId,
+  subscriptionSelectType,
+} from "@/server/db/schema";
 import { SubscriptionFormContent } from "./add-subscription-content";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 type AddSubscriptionDialogProps = {
   onAddSubscription: (
-    subscription: subscriptionInsertTypeWithoutUserId
+    subscription: subscriptionInsertTypeWithoutUserId,
   ) => void;
   initialSubscription?: subscriptionSelectType;
   mode?: "add" | "edit";
@@ -37,19 +40,19 @@ export function AddSubscriptionDialog({
   const [startDate, setStartDate] = useState<Date | undefined>(
     initialSubscription?.startDate
       ? new Date(initialSubscription.startDate)
-      : undefined
+      : undefined,
   );
   const [endDate, setEndDate] = useState<Date | undefined>(
     initialSubscription?.endDate
       ? new Date(initialSubscription.endDate)
-      : undefined
+      : undefined,
   );
   const [platform, setPlatform] = useState(initialSubscription?.platform || "");
   const [isOngoing, setIsOngoing] = useState(
-    initialSubscription?.endDate === null
+    initialSubscription?.endDate === null,
   );
   const [billingCycle, setBillingCycle] = useState(
-    initialSubscription?.billingCycle || "monthly"
+    initialSubscription?.billingCycle || "monthly",
   );
   const [customPlatform, setCustomPlatform] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +67,7 @@ export function AddSubscriptionDialog({
       setEndDate(
         initialSubscription.endDate
           ? new Date(initialSubscription.endDate)
-          : undefined
+          : undefined,
       );
       setPlatform(initialSubscription.platform);
       setIsOngoing(initialSubscription.endDate === null);
