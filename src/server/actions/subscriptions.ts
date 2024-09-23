@@ -39,7 +39,7 @@ export async function addTestSubscription() {
 }
 
 export async function addSubscriptions(
-  formData: subscriptionInsertTypeWithoutUserId,
+  formData: subscriptionInsertTypeWithoutUserId
 ) {
   const session = await auth();
   console.log("session", session);
@@ -143,7 +143,7 @@ export async function getAllSubscriptions() {
   return allSubscriptions;
 }
 
-export async function deleteSubscription(id: string) {
+export async function deleteSubscription(id: number) {
   const session = await auth();
   if (!session) {
     throw new Error("You must be logged in to delete a subscription");
@@ -159,8 +159,8 @@ export async function deleteSubscription(id: string) {
 }
 
 export async function updateSubscription(
-  id: string,
-  formData: subscriptionInsertTypeWithoutUserId,
+  id: number,
+  formData: subscriptionInsertTypeWithoutUserId
 ) {
   const session = await auth();
   if (!session) {
@@ -176,5 +176,5 @@ export async function updateSubscription(
   await db
     .update(subscriptions)
     .set({ ...formData })
-    .where(eq(subscriptions.id, Number(id)));
+    .where(eq(subscriptions.id, id));
 }
