@@ -36,7 +36,7 @@ Follow these steps to set up Resubs on your local machine and deploy it to Cloud
    ```
 
 3. Set up Cloudflare:
-   - Run `wrangler whoami` to ensure you're logged into your Cloudflare account
+   - Run `pnpx wrangler whoami` to ensure you're logged into your Cloudflare account
    - Create a new Cloudflare Pages project
    - Create a new D1 database for your project
 
@@ -48,7 +48,10 @@ Follow these steps to set up Resubs on your local machine and deploy it to Cloud
 
 6. Set up authentication:
    - Create a Google OAuth client and get the client ID and secret
-   - Generate an AUTH_SECRET for NextAuth.js
+   - Generate an AUTH_SECRET for NextAuth.js using `openssl`
+     ```
+     openssl rand -base64 32
+     ```
    - Add these secrets to your Cloudflare Pages project:
      - AUTH_SECRET
      - AUTH_GOOGLE_ID

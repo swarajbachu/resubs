@@ -1,14 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogClose,
@@ -23,8 +15,30 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Plus } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Plus, Check, CalendarIcon } from "lucide-react";
 import type { subscriptionInsertType } from "@/server/db/schema";
+import NetflixLogo from "@/components/logo/netflix";
+import Spotify from "@/components/logo/spotify";
+import YoutubeLogo from "@/components/logo/youtube";
+import AppleLogo from "@/components/logo/apple";
+import GameLogo from "@/components/logo/game";
+import { PriceInput } from "../ui/currency-input";
 
 type AddSubscriptionDialogProps = {
   onAddSubscription: (
@@ -32,31 +46,65 @@ type AddSubscriptionDialogProps = {
   ) => void;
 };
 
+const platformOptions = [
+  { value: "netflix", label: "Netflix", icon: NetflixLogo },
+  { value: "spotify", label: "Spotify", icon: Spotify },
+  { value: "youtube", label: "YouTube", icon: YoutubeLogo },
+  { value: "apple", label: "Apple", icon: AppleLogo },
+  { value: "games", label: "Games", icon: GameLogo },
+  { value: "other", label: "Other", icon: Plus },
+];
+
+const billingCycles = [
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly", label: "Yearly" },
+  { value: "weekly", label: "Weekly" },
+];
+
 export function AddSubscriptionDialog({
   onAddSubscription,
 }: AddSubscriptionDialogProps) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [platform, setPlatform] = useState("");
-  const [openDatePicker, setOpenDatePicker] = useState(false);
+  const [isOngoing, setIsOngoing] = useState(true);
+  const [billingCycle, setBillingCycle] = useState("monthly");
+  const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
+  const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
+  const [openPlatformSelect, setOpenPlatformSelect] = useState(false);
+  const [customPlatform, setCustomPlatform] = useState("");
 
   const handleAddSubscription = () => {
-    console.log(name, price, date, platform);
-    if (name && price && date && platform) {
+    if (
+      name &&
+      price &&
+      startDate &&
+      (isOngoing || endDate) &&
+      (platform || customPlatform)
+    ) {
       onAddSubscription({
-        billingCycle: "monthly",
-
+        billingCycle,
         name,
         price: price,
-        startDate: date,
-        platform,
+        startDate: startDate,
+        endDate: isOngoing ? null : endDate,
+        platform: platform === "other" ? customPlatform : platform,
       });
-      setName("");
-      setPrice("");
-      setDate(undefined);
-      setPlatform("");
+      resetForm();
     }
+  };
+
+  const resetForm = () => {
+    setName("");
+    setPrice("");
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setPlatform("");
+    setIsOngoing(true);
+    setCustomPlatform("");
+    setBillingCycle("monthly");
   };
 
   return (
@@ -67,66 +115,165 @@ export function AddSubscriptionDialog({
           Add Subscription
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add New Subscription</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+          <Input
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full"
+            placeholder="Subscription Name"
+          />
+          {/* <Input
+            id="price"
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="w-full"
+            placeholder="Price"
+          /> */}
+          <PriceInput value={price} onChange={setPrice} />
+          <Select value={billingCycle} onValueChange={setBillingCycle}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select billing cycle" />
+            </SelectTrigger>
+            <SelectContent>
+              {billingCycles.map((cycle) => (
+                <SelectItem key={cycle.value} value={cycle.value}>
+                  {cycle.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Popover
+            modal={true}
+            open={openStartDatePicker}
+            onOpenChange={setOpenStartDatePicker}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {startDate
+                  ? startDate.toLocaleDateString()
+                  : "Pick a start date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={(date) => {
+                  setStartDate(date);
+                  setOpenStartDatePicker(false);
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              Ongoing Subscription
+            </span>
+            <Switch
+              id="ongoing"
+              checked={isOngoing}
+              onCheckedChange={setIsOngoing}
             />
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="price">Price</Label>
-            <Input
-              id="price"
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="date">Date</Label>
-            <Popover open={openDatePicker} onOpenChange={setOpenDatePicker}>
+          {!isOngoing && (
+            <Popover
+              open={openEndDatePicker}
+              onOpenChange={setOpenEndDatePicker}
+            >
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  onClick={() => setOpenDatePicker(true)}
+                  className="w-full justify-start text-left font-normal"
                 >
-                  {date ? date.toLocaleDateString() : "Pick a date"}
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {endDate ? endDate.toLocaleDateString() : "Pick an end date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={date}
-                  onSelect={setDate}
+                  selected={endDate}
+                  onSelect={(date) => {
+                    setEndDate(date);
+                    setOpenEndDatePicker(false);
+                  }}
                   initialFocus
                 />
               </PopoverContent>
             </Popover>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="platform">Platform</Label>
-            <Select value={platform} onValueChange={setPlatform}>
-              <SelectTrigger id="platform">
-                <SelectValue placeholder="Select platform" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="netflix">Netflix</SelectItem>
-                <SelectItem value="spotify">Spotify</SelectItem>
-                <SelectItem value="youtube">YouTube</SelectItem>
-                <SelectItem value="apple">Apple</SelectItem>
-                <SelectItem value="games">Games</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          )}
+          <Popover
+            open={openPlatformSelect}
+            onOpenChange={setOpenPlatformSelect}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openPlatformSelect}
+                className="w-full justify-between"
+              >
+                {platform
+                  ? platformOptions.find((option) => option.value === platform)
+                      ?.label
+                  : "Select platform"}
+                <Check className={"ml-auto h-4 w-4 opacity-0"} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="Search platform..." />
+                <CommandList>
+                  <CommandEmpty>No platform found.</CommandEmpty>
+                  <CommandGroup>
+                    {platformOptions.map((option) => (
+                      <CommandItem
+                        key={option.value}
+                        onSelect={() => {
+                          setPlatform(option.value);
+                          setOpenPlatformSelect(false);
+                        }}
+                      >
+                        <option.icon className="mr-2 sm:size-4" />
+                        {option.label}
+                        <Check
+                          className={`ml-auto h-4 w-4 ${
+                            platform === option.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          }`}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          {platform === "other" && (
+            <Input
+              id="customPlatform"
+              value={customPlatform}
+              onChange={(e) => setCustomPlatform(e.target.value)}
+              placeholder="Enter custom platform"
+              className="w-full"
+            />
+          )}
           <DialogClose asChild>
-            <Button onClick={handleAddSubscription}>Add Subscription</Button>
+            <Button onClick={handleAddSubscription} className="w-full">
+              Add Subscription
+            </Button>
           </DialogClose>
         </div>
       </DialogContent>
