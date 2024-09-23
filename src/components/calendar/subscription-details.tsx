@@ -59,7 +59,7 @@ function SubscriptionCard({
 }: {
   subscription: subscriptionSelectType;
   onEdit: (subscription: subscriptionSelectType) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }) {
   const [totalSpent, setTotalSpent] = useState(
     calculateTotalSpent(subscription),
@@ -181,7 +181,7 @@ export default function SubscriptionDetails({
   onUpdateSubscription: (
     subscription: subscriptionInsertTypeWithoutUserId,
   ) => void;
-  onDeleteSubscription: (id: string) => void;
+  onDeleteSubscription: (id: number) => void;
 }) {
   const [editingSubscription, setEditingSubscription] =
     useState<subscriptionSelectType | null>(null);
