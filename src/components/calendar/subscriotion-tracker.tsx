@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { addSubscriptions } from "@/server/actions/subscriptions";
+import {
+  addSubscriptions,
+  deleteSubscription,
+  updateSubscription,
+} from "@/server/actions/subscriptions";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
@@ -50,24 +54,17 @@ export function SubscriptionTracker() {
   });
 
   const addSubscription = async (
-    newSubscription: subscriptionInsertTypeWithoutUserId,
+    newSubscription: subscriptionInsertTypeWithoutUserId
   ) => {
     setSubscriptions([...subscriptions, newSubscription]);
-    toast.promise(
-      addSubscriptionMutation({
-        billingCycle: "monthly",
-        startDate: newSubscription.startDate,
-        name: newSubscription.name,
-        price: newSubscription.price.toString(),
-        platform: newSubscription.platform,
-      }),
-      {
-        loading: "Adding subscription...",
-        success: "Subscription added successfully!",
-        error: "Failed to add subscription",
-      },
-    );
+    toast.promise(addSubscriptionMutation(newSubscription), {
+      loading: "Adding subscription...",
+      success: "Subscription added successfully!",
+      error: "Failed to add subscription",
+    });
   };
+
+
 
   const changeMonth = (increment: number) => {
     setSlideDirection(increment > 0 ? "up" : "down");
@@ -79,7 +76,7 @@ export function SubscriptionTracker() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
+    <div className="container mx-auto p-4 max-w-3xl">
       <div className="flex justify-between sm:flex-row flex-col items-start gap-2 sm:items-center mb-2 sm:mb-6 sm:px-6">
         <CalendarHeader
           slideDirection={slideDirection}

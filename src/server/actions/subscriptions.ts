@@ -12,7 +12,7 @@ import { auth } from "@/server/auth";
 import { google } from "googleapis";
 
 export async function addSubscriptions(
-  formData: subscriptionInsertTypeWithoutUserId,
+  formData: subscriptionInsertTypeWithoutUserId
 ) {
   const session = await auth();
   if (!session) {
@@ -98,4 +98,40 @@ export async function getAllSubscriptions() {
   });
 
   return allSubscriptions;
+}
+
+export async function deleteSubscription(id: string) {
+  const session = await auth();
+  if (!session) {
+    throw new Error("You must be logged in to delete a subscription");
+  }
+  if (!session.user) {
+    throw new Error("You must be logged in to delete a subscription");
+  }
+  if (!session.user.id) {
+    throw new Error("You must be logged in to delete a subscription");
+  }
+
+  await db.delete(subscriptions).where(eq(subscriptions.id, id));
+}
+
+export async function updateSubscription(
+  id: string,
+  formData: subscriptionInsertTypeWithoutUserId
+) {
+  const session = await auth();
+  if (!session) {
+    throw new Error("You must be logged in to update a subscription");
+  }
+  if (!session.user) {
+    throw new Error("You must be logged in to update a subscription");
+  }
+  if (!session.user.id) {
+    throw new Error("You must be logged in to update a subscription");
+  }
+
+  await db
+    .update(subscriptions)
+    .set({ ...formData })
+    .where(eq(subscriptions.id, id));
 }

@@ -23,6 +23,7 @@
   "dependencies": {
     "@auth/core": "^0.35.0",
     "@auth/drizzle-adapter": "^1.5.0",
+    "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-icons": "^1.3.0",
@@ -58,6 +59,7 @@
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "vaul": "^0.9.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {

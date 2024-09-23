@@ -10,9 +10,18 @@ import AppleLogo from "@/components/logo/apple";
 import GameLogo from "@/components/logo/game";
 import SubscriptionDetails from "./subscription-details";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import type { subscriptionSelectType } from "@/server/db/schema";
-import { useQuery } from "@tanstack/react-query";
-import { getAllSubscriptions } from "@/server/actions/subscriptions";
+import {
+  type subscriptionInsertTypeWithoutUserId,
+  subscriptions,
+  type subscriptionSelectType,
+} from "@/server/db/schema";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  deleteSubscription,
+  getAllSubscriptions,
+  updateSubscription,
+} from "@/server/actions/subscriptions";
+import { toast } from "sonner";
 
 const platformIcons = {
   netflix: NetflixLogo,
@@ -33,44 +42,51 @@ type CalendarGridProps = {
 export function CalendarGrid({ calendarDays, isDragging }: CalendarGridProps) {
   const isMobile = useMediaQuery("(max-width: 640px)");
 
+  const queryClient = useQueryClient();
+
   const { data: allSubscriptions } = useQuery({
     queryKey: ["subscriptions"],
     queryFn: () => getAllSubscriptions(),
   });
 
+  const { mutateAsync: updateSubscriptionMutation } = useMutation({
+    mutationFn: (sub: subscriptionInsertTypeWithoutUserId) =>
+      // biome-ignore lint/style/noNonNullAssertion: <explanation>
+      updateSubscription(sub.id!, sub),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+    },
+  });
+
+  const { mutateAsync: deleteSubscriptionMutation } = useMutation({
+    mutationFn: (id: string) => deleteSubscription(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+    },
+  });
+
   const getSubscriptionsForDate = (date: Date) => {
     return allSubscriptions?.filter((sub) =>
-      isSubscriptionActiveOnDate(sub, date),
+      isSubscriptionActiveOnDate(sub, date)
     );
   };
 
-  const renderSubscriptionIcons = (
-    subs: subscriptionSelectType[] | undefined,
+  const updateSubscriptionFunction = async (
+    subscription: subscriptionInsertTypeWithoutUserId
   ) => {
-    const maxIcons = isMobile ? 1 : 3;
-    const iconsToShow = subs?.slice(0, maxIcons);
-    const remainingCount = subs ? subs.length - maxIcons : 0;
+    toast.promise(updateSubscriptionMutation(subscription), {
+      loading: "Updating subscription...",
+      success: "Subscription updated successfully!",
+      error: "Failed to update subscription",
+    });
+  };
 
-    if (!iconsToShow) return null;
-
-    return (
-      <>
-        {iconsToShow.map((sub) => {
-          const Icon =
-            platformIcons[sub.platform as keyof typeof platformIcons];
-          return (
-            <div key={sub.id} className="w-6 h-6">
-              <Icon className="sm:w-6" />
-            </div>
-          );
-        })}
-        {remainingCount > 0 && (
-          <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
-            +{remainingCount}
-          </div>
-        )}
-      </>
-    );
+  const deleteSubscriptionFunction = async (id: string) => {
+    toast.promise(deleteSubscriptionMutation(id), {
+      loading: "Deleting subscription...",
+      success: "Subscription deleted successfully!",
+      error: "Failed to delete subscription",
+    });
   };
 
   return (
@@ -96,14 +112,22 @@ export function CalendarGrid({ calendarDays, isDragging }: CalendarGridProps) {
                 }`}
               >
                 <div className="flex flex-wrap gap-1 justify-center">
-                  {renderSubscriptionIcons(subs)}
+                  {renderSubscriptionIcons(subs, isMobile)}
                 </div>
                 <span className="text-sm font-medium">{date.getDate()}</span>
               </div>
             </PopoverTrigger>
             {!isDragging && hasSubscriptions && (
               <PopoverContent className="p-0 w-full max-w-md">
-                <SubscriptionDetails subscriptions={subs} />
+                <SubscriptionDetails
+                  onDeleteSubscription={(id: string) =>
+                    deleteSubscriptionFunction(id)
+                  }
+                  onUpdateSubscription={(
+                    sub: subscriptionInsertTypeWithoutUserId
+                  ) => updateSubscriptionFunction(sub)}
+                  subscriptions={subs}
+                />
               </PopoverContent>
             )}
           </Popover>
@@ -113,9 +137,34 @@ export function CalendarGrid({ calendarDays, isDragging }: CalendarGridProps) {
   );
 }
 
+const renderSubscriptionIcons = (
+  subs: subscriptionSelectType[] | undefined,
+  isMobile: boolean
+) => {
+  const maxIcons = isMobile ? 0 : 2;
+  const iconsToShow = subs?.slice(0, maxIcons);
+  const remainingCount = subs ? subs.length - maxIcons : 0;
+
+  if (!iconsToShow) return null;
+
+  return (
+    <div className="flex gap-1 flex-wrap items-center justify-center">
+      {iconsToShow.map((sub) => {
+        const Icon = platformIcons[sub.platform as keyof typeof platformIcons];
+        return <Icon key={sub.id} className="sm:w-6" />;
+      })}
+      {remainingCount > 0 && (
+        <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+          +{remainingCount}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const isSubscriptionActiveOnDate = (
   subscription: subscriptionSelectType | undefined,
-  date: Date,
+  date: Date
 ): boolean => {
   if (!subscription) return false;
   const startDate = new Date(subscription.startDate);
@@ -127,7 +176,6 @@ const isSubscriptionActiveOnDate = (
 
   // Check if the date is within the overall subscription period
   if (date < startDate || (endDate && date > endDate)) {
-    console.log("not in range for ", date);
     return false;
   }
 
