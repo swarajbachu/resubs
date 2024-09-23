@@ -69,6 +69,8 @@ type SubscriptionFormContentProps = {
   setCustomPlatform: (platform: string) => void;
   handleSubmit: () => void;
   mode: "add" | "edit";
+  currency: string;
+  setCurrency: (currency: string) => void;
 };
 
 export function SubscriptionFormContent({
@@ -90,13 +92,15 @@ export function SubscriptionFormContent({
   setCustomPlatform,
   handleSubmit,
   mode,
+  currency,
+  setCurrency,
 }: SubscriptionFormContentProps) {
   const [openStartDatePicker, setOpenStartDatePicker] = React.useState(false);
   const [openEndDatePicker, setOpenEndDatePicker] = React.useState(false);
   const [openPlatformSelect, setOpenPlatformSelect] = React.useState(false);
 
   return (
-    <div className="grid gap-4 p-4">
+    <div className="grid gap-4 sm:p-4 sm:px-0 p-4">
       <Input
         id="name"
         value={name}
@@ -104,7 +108,12 @@ export function SubscriptionFormContent({
         className="w-full"
         placeholder="Subscription Name"
       />
-      <PriceInput value={price} onChange={setPrice} />
+      <PriceInput
+        value={price}
+        onChange={setPrice}
+        currency={currency}
+        setCurrency={setCurrency}
+      />
       <Select value={billingCycle} onValueChange={setBillingCycle}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select billing cycle" />

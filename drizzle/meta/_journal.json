@@ -22,6 +22,27 @@
       "when": 1726976739058,
       "tag": "0002_goofy_champions",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1727123158402,
+      "tag": "0003_chunky_expediter",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1727124767915,
+      "tag": "0004_skinny_gabe_jones",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1727125038352,
+      "tag": "0005_chilly_doorman",
+      "breakpoints": true
     }
   ]
 }

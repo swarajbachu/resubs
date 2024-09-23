@@ -29,6 +29,8 @@ import {
   DollarSignIcon,
   EditIcon,
   TrashIcon,
+  Wallet,
+  WalletIcon,
 } from "lucide-react";
 import NetflixLogo from "@/components/logo/netflix";
 import Spotify from "@/components/logo/spotify";
@@ -40,6 +42,7 @@ import type {
   subscriptionSelectType,
 } from "@/server/db/schema";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
+import { currencyList } from "@/lib/currencies";
 
 const platformIcons = {
   netflix: NetflixLogo,
@@ -146,8 +149,11 @@ function SubscriptionCard({
             </div>
           )}
           <div className="flex items-center space-x-2">
-            <DollarSignIcon className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm">Total spent: ${totalSpent}</span>
+            <WalletIcon className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm">
+              Total spent: {getCurrencySymbol(subscription.currency)}{" "}
+              {totalSpent}
+            </span>
           </div>
         </div>
       </CardContent>
@@ -158,7 +164,7 @@ function SubscriptionCard({
             Monthly Cost
           </span>
           <span className="text-xl sm:text-2xl font-bold">
-            ${subscription.price}
+            {getCurrencySymbol(subscription.currency)} {subscription.price}
           </span>
         </div>
       </CardFooter>
@@ -239,3 +245,9 @@ export default function SubscriptionDetails({
     </>
   );
 }
+
+const getCurrencySymbol = (code: string) => {
+  return (
+    currencyList.find((currency) => currency.code === code)?.symbol || code
+  );
+};

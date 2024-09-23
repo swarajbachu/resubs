@@ -141,7 +141,7 @@ const renderSubscriptionIcons = (
   subs: subscriptionSelectType[] | undefined,
   isMobile: boolean,
 ) => {
-  const maxIcons = isMobile ? 0 : 2;
+  const maxIcons = isMobile ? 0 : 1;
   const iconsToShow = subs?.slice(0, maxIcons);
   const remainingCount = subs ? subs.length - maxIcons : 0;
 

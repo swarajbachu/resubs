@@ -26,28 +26,37 @@ type Currency = {
 type PriceInputProps = {
   value: string;
   onChange: (value: string, currency: string) => void;
+  currency: string;
+  setCurrency: (currency: string) => void;
 };
 
-export function PriceInput({ value, onChange }: PriceInputProps) {
-  const [currencies, setCurrencies] = useState<Currency[]>([]);
+export function PriceInput({
+  value,
+  onChange,
+  currency,
+  setCurrency,
+}: PriceInputProps) {
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(
     null,
   );
   const [openCurrencySelect, setOpenCurrencySelect] = useState(false);
 
   useEffect(() => {
-    setCurrencies(currencyList);
-    const defaultCurrencyCode = getUserCurrency();
+    const defaultCurrencyCode =
+      currencyList.find((curr) => curr.code === currency)?.code ||
+      getUserCurrency();
     const defaultCurrency =
       currencyList.find((currency) => currency.code === defaultCurrencyCode) ||
       currencyList[0];
     setSelectedCurrency(defaultCurrency);
+    setCurrency(defaultCurrency.code);
   }, []);
 
   const handleCurrencySelect = (currency: Currency) => {
     setSelectedCurrency(currency);
     setOpenCurrencySelect(false);
     onChange(value, currency.code);
+    setCurrency(currency.code);
   };
 
   return (
@@ -73,7 +82,7 @@ export function PriceInput({ value, onChange }: PriceInputProps) {
             <CommandList>
               <CommandEmpty>No currency found.</CommandEmpty>
               <CommandGroup className="overflow-y-auto">
-                {currencies.map((currency) => (
+                {currencyList.map((currency) => (
                   <CommandItem
                     key={currency.code}
                     onSelect={() => handleCurrencySelect(currency)}

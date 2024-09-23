@@ -11,6 +11,33 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/server/auth";
 import { google } from "googleapis";
 
+export async function addTestSubscription() {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new Error("You must be logged in to add a subscription");
+  }
+
+  const newSubscription = await db
+    .insert(subscriptions)
+    .values({
+      billingCycle: "MONTHLY",
+      name: "Test Subscription",
+      platform: "Spotify",
+      price: "10",
+      currency: "USD",
+      startDate: new Date(),
+      endDate: new Date(),
+      userId: session.user.id,
+    })
+    .returning()
+    .catch(console.error);
+
+  console.log("New subscription added:", newSubscription);
+
+  return newSubscription;
+}
+
 export async function addSubscriptions(
   formData: subscriptionInsertTypeWithoutUserId,
 ) {
@@ -25,12 +52,26 @@ export async function addSubscriptions(
     throw new Error("You must be logged in to add a subscription");
   }
 
+  console.log("Form data:", formData);
+
   try {
     // Add subscription to database
-    const [newSubscription] = await db
+    const newSubscription = await db
       .insert(subscriptions)
-      .values({ ...formData, userId: session.user.id })
-      .returning();
+      .values({
+        billingCycle: formData.billingCycle,
+        name: formData.name,
+        platform: formData.platform,
+        price: formData.price,
+        currency: formData.currency,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        userId: session.user.id,
+      })
+      .returning()
+      .catch(console.error);
+
+    console.log("New subscription added:", newSubscription);
 
     // Add to Google Calendar if checkbox is checked
     // if (addToGoogleCalendar) {
@@ -77,7 +118,8 @@ export async function addSubscriptions(
     return { success: true, subscription: newSubscription };
   } catch (error) {
     console.error("Error adding subscription:", error);
-    return { success: false, error: "Failed to add subscription" };
+    throw error;
+    // return { success: false, error: "Failed to add subscription" };
   }
 }
 

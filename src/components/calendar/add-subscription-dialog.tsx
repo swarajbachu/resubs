@@ -37,6 +37,9 @@ export function AddSubscriptionDialog({
 }: AddSubscriptionDialogProps) {
   const [name, setName] = useState(initialSubscription?.name || "");
   const [price, setPrice] = useState(initialSubscription?.price || "");
+  const [currency, setCurrency] = useState(
+    initialSubscription?.currency || "USD",
+  );
   const [startDate, setStartDate] = useState<Date | undefined>(
     initialSubscription?.startDate
       ? new Date(initialSubscription.startDate)
@@ -72,6 +75,7 @@ export function AddSubscriptionDialog({
       setPlatform(initialSubscription.platform);
       setIsOngoing(initialSubscription.endDate === null);
       setBillingCycle(initialSubscription.billingCycle);
+      setCurrency(initialSubscription.currency);
       setIsOpen(true);
     }
   }, [initialSubscription]);
@@ -91,6 +95,7 @@ export function AddSubscriptionDialog({
         startDate: startDate,
         endDate: isOngoing ? null : endDate,
         platform: platform === "other" ? customPlatform : platform,
+        currency: currency,
       });
       resetForm();
       setIsOpen(false);
@@ -106,6 +111,7 @@ export function AddSubscriptionDialog({
     setIsOngoing(true);
     setCustomPlatform("");
     setBillingCycle("monthly");
+    setCurrency("USD");
   };
 
   const formContent = (
@@ -128,6 +134,8 @@ export function AddSubscriptionDialog({
       setCustomPlatform={setCustomPlatform}
       handleSubmit={handleSubmit}
       mode={mode}
+      currency={currency}
+      setCurrency={setCurrency}
     />
   );
 
@@ -136,7 +144,7 @@ export function AddSubscriptionDialog({
       <Drawer open={isOpen} onOpenChange={setIsOpen}>
         {mode === "add" && (
           <DrawerTrigger asChild>
-            <Button>
+            <Button size="sm" className="h-9">
               <Plus className="w-4 h-4 mr-2" />
               Add Subscription
             </Button>
@@ -158,7 +166,7 @@ export function AddSubscriptionDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {mode === "add" && (
         <DialogTrigger asChild>
-          <Button>
+          <Button size="sm" className="h-9">
             <Plus className="w-4 h-4 mr-2" />
             Add Subscription
           </Button>

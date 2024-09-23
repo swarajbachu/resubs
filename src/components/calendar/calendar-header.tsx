@@ -8,6 +8,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils"; // Adjust your import for cn utility if necessary
 import { useEffect } from "react";
+import { addTestSubscription } from "@/server/actions/subscriptions";
 
 type CalendarHeaderProps = {
   currentMonth: Date;

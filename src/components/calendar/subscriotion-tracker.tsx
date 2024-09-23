@@ -5,11 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import {
-  addSubscriptions,
-  deleteSubscription,
-  updateSubscription,
-} from "@/server/actions/subscriptions";
+import { addSubscriptions } from "@/server/actions/subscriptions";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
@@ -45,18 +41,19 @@ export function SubscriptionTracker() {
 
   const queryClient = useQueryClient();
 
-  const { mutateAsync: addSubscriptionMutation, isPending } = useMutation({
+  const { mutateAsync: addSubscriptionMutation } = useMutation({
     mutationFn: (subscription: subscriptionInsertTypeWithoutUserId) =>
       addSubscriptions(subscription),
     onSuccess: () => {
+      console.log("Subscription added");
       queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
     },
   });
 
-  const addSubscription = async (
+  const addSubscriptionFunction = async (
     newSubscription: subscriptionInsertTypeWithoutUserId,
   ) => {
-    setSubscriptions([...subscriptions, newSubscription]);
+    // setSubscriptions([...subscriptions, newSubscription]);
     toast.promise(addSubscriptionMutation(newSubscription), {
       loading: "Adding subscription...",
       success: "Subscription added successfully!",
@@ -82,7 +79,9 @@ export function SubscriptionTracker() {
           onPrevMonth={() => changeMonth(-1)}
           onNextMonth={() => changeMonth(1)}
         />
-        <AddSubscriptionDialog onAddSubscription={addSubscription} />
+        <div className="fixed bottom-4 right-16">
+          <AddSubscriptionDialog onAddSubscription={addSubscriptionFunction} />
+        </div>
       </div>
       <Card className="bg-background overflow-hidden shadow-none">
         <CardContent className="sm:p-6 p-1">
