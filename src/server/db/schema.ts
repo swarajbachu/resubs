@@ -117,10 +117,7 @@ export const authenticators = sqliteTable(
 );
 
 export const subscriptions = sqliteTable("subscriptions", {
-  id: text("id")
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => `subscription_${nanoid(12)}`),
+  id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   price: text("price").notNull(),
   currency: text("currency").notNull().default("USD"),

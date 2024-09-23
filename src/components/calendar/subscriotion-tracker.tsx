@@ -54,6 +54,7 @@ export function SubscriptionTracker() {
     newSubscription: subscriptionInsertTypeWithoutUserId,
   ) => {
     // setSubscriptions([...subscriptions, newSubscription]);
+    console.log("newSubscription", newSubscription);
     toast.promise(addSubscriptionMutation(newSubscription), {
       loading: "Adding subscription...",
       success: "Subscription added successfully!",
