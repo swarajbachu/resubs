@@ -67,12 +67,12 @@ export function CalendarGrid({ calendarDays, isDragging }: CalendarGridProps) {
 
   const getSubscriptionsForDate = (date: Date) => {
     return allSubscriptions?.filter((sub) =>
-      isSubscriptionActiveOnDate(sub, date)
+      isSubscriptionActiveOnDate(sub, date),
     );
   };
 
   const updateSubscriptionFunction = async (
-    subscription: subscriptionInsertTypeWithoutUserId
+    subscription: subscriptionInsertTypeWithoutUserId,
   ) => {
     toast.promise(updateSubscriptionMutation(subscription), {
       loading: "Updating subscription...",
@@ -124,7 +124,7 @@ export function CalendarGrid({ calendarDays, isDragging }: CalendarGridProps) {
                     deleteSubscriptionFunction(id)
                   }
                   onUpdateSubscription={(
-                    sub: subscriptionInsertTypeWithoutUserId
+                    sub: subscriptionInsertTypeWithoutUserId,
                   ) => updateSubscriptionFunction(sub)}
                   subscriptions={subs}
                 />
@@ -139,7 +139,7 @@ export function CalendarGrid({ calendarDays, isDragging }: CalendarGridProps) {
 
 const renderSubscriptionIcons = (
   subs: subscriptionSelectType[] | undefined,
-  isMobile: boolean
+  isMobile: boolean,
 ) => {
   const maxIcons = isMobile ? 0 : 1;
   const iconsToShow = subs?.slice(0, maxIcons);
@@ -164,7 +164,7 @@ const renderSubscriptionIcons = (
 
 const isSubscriptionActiveOnDate = (
   subscription: subscriptionSelectType | undefined,
-  date: Date
+  date: Date,
 ): boolean => {
   if (!subscription) return false;
   const startDate = new Date(subscription.startDate);

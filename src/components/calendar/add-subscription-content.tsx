@@ -25,24 +25,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Check, CalendarIcon } from "lucide-react";
 import { PriceInput } from "@/components/ui/currency-input";
-import type {
-  subscriptionInsertTypeWithoutUserId,
-  subscriptionSelectType,
-} from "@/server/db/schema";
-import NetflixLogo from "@/components/logo/netflix";
-import Spotify from "@/components/logo/spotify";
-import YoutubeLogo from "@/components/logo/youtube";
-import AppleLogo from "@/components/logo/apple";
-import GameLogo from "@/components/logo/game";
-
-const platformOptions = [
-  { value: "netflix", label: "Netflix", icon: NetflixLogo },
-  { value: "spotify", label: "Spotify", icon: Spotify },
-  { value: "youtube", label: "YouTube", icon: YoutubeLogo },
-  { value: "apple", label: "Apple", icon: AppleLogo },
-  { value: "games", label: "Games", icon: GameLogo },
-  { value: "other", label: "Other", icon: GameLogo },
-];
+import platformOptions from "@/lib/platforms";
 
 const billingCycles = [
   { value: "monthly", label: "Monthly" },
@@ -186,7 +169,11 @@ export function SubscriptionFormContent({
           </PopoverContent>
         </Popover>
       )}
-      <Popover open={openPlatformSelect} onOpenChange={setOpenPlatformSelect}>
+      <Popover
+        modal
+        open={openPlatformSelect}
+        onOpenChange={setOpenPlatformSelect}
+      >
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -215,7 +202,7 @@ export function SubscriptionFormContent({
                       setOpenPlatformSelect(false);
                     }}
                   >
-                    <option.icon className="mr-2 sm:size-4" />
+                    <option.icon className="mr-2 size-5 sm:size-5" />
                     {option.label}
                     <Check
                       className={`ml-auto h-4 w-4 ${

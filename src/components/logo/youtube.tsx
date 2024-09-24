@@ -1,31 +1,17 @@
-import { cn } from "@/lib/utils";
-import React from "react";
-
-export default function YoutubeLogo({ className }: { className?: string }) {
-  return (
-    <>
-      <svg
-        version="1.1"
-        viewBox="0 0 512 512"
-        xmlSpace="preserve"
-        className={cn("size-5 sm:size-10", className)}
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-      >
-        <g id="_x33_95-youtube">
-          <g>
-            <path
-              d="M476.387,144.888c-5.291-19.919-20.878-35.608-40.67-40.933C399.845,94.282,256,94.282,256,94.282    s-143.845,0-179.719,9.674c-19.791,5.325-35.378,21.013-40.668,40.933c-9.612,36.105-9.612,111.438-9.612,111.438    s0,75.334,9.612,111.438c5.29,19.92,20.877,34.955,40.668,40.281C112.155,417.719,256,417.719,256,417.719    s143.845,0,179.717-9.674c19.792-5.326,35.379-20.361,40.67-40.281c9.612-36.104,9.612-111.438,9.612-111.438    S485.999,180.994,476.387,144.888z"
-              style={{ fill: "#FF0000" }}
-            />
-            <polygon
-              points="208.954,324.723 208.954,187.93 329.18,256.328   "
-              style={{ fill: "#FFFFFF" }}
-            />
-          </g>
-        </g>
-        <g id="Layer_1" />
-      </svg>
-    </>
-  );
-}
+import * as React from "react";
+import type { SVGProps } from "react";
+const YouTube = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    viewBox="0 0 256 180"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid"
+    {...props}
+  >
+    <path
+      d="M250.346 28.075A32.18 32.18 0 0 0 227.69 5.418C207.824 0 127.87 0 127.87 0S47.912.164 28.046 5.582A32.18 32.18 0 0 0 5.39 28.24c-6.009 35.298-8.34 89.084.165 122.97a32.18 32.18 0 0 0 22.656 22.657c19.866 5.418 99.822 5.418 99.822 5.418s79.955 0 99.82-5.418a32.18 32.18 0 0 0 22.657-22.657c6.338-35.348 8.291-89.1-.164-123.134Z"
+      fill="red"
+    />
+    <path fill="#FFF" d="m102.421 128.06 66.328-38.418-66.328-38.418z" />
+  </svg>
+);
+export default YouTube;

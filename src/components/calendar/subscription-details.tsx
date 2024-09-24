@@ -43,14 +43,7 @@ import type {
 } from "@/server/db/schema";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { currencyList } from "@/lib/currencies";
-
-const platformIcons = {
-  netflix: NetflixLogo,
-  spotify: Spotify,
-  youtube: YoutubeLogo,
-  apple: AppleLogo,
-  games: GameLogo,
-};
+import platformOptions from "@/lib/platforms";
 
 function SubscriptionCard({
   subscription,
@@ -76,8 +69,8 @@ function SubscriptionCard({
   }
 
   const PlatformIcon =
-    platformIcons[subscription.platform as keyof typeof platformIcons] ||
-    GameLogo;
+    platformOptions.find((platform) => platform.value === subscription.platform)
+      ?.icon || GameLogo;
 
   return (
     <Card className=" shadow-none p-0 w-[280px] sm:w-[350px] sm:max-h-[400px] max-h-[300px] overflow-y-auto">
@@ -116,7 +109,7 @@ function SubscriptionCard({
         <CardTitle className="text-base sm:text-lg max-w-[150px]  sm:max-w-[250px] font-bold">
           {subscription.name}
         </CardTitle>
-        <PlatformIcon className="sm:size-7" />
+        <PlatformIcon className="sm:size-7 size-6" />
       </CardHeader>
       <CardContent className="pt-1 sm:pt-4">
         <div className="space-y-4">
@@ -211,15 +204,16 @@ export default function SubscriptionDetails({
         <TabsList className="grid w-full grid-cols-3 bg-card p-2">
           {subscriptions.map((sub) => {
             const PlatformIcon =
-              platformIcons[sub.platform as keyof typeof platformIcons] ||
-              GameLogo;
+              platformOptions.find(
+                (platform) => platform.value === sub.platform,
+              )?.icon || GameLogo;
             return (
               <TabsTrigger
                 key={sub.id}
                 value={sub.name}
                 className="flex gap-1 rounded-sm items-center"
               >
-                <PlatformIcon className="sm:size-3" />
+                <PlatformIcon className="sm:size-4" />
                 <span className="text-xs">{sub.platform}</span>
               </TabsTrigger>
             );

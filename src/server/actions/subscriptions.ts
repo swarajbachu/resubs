@@ -39,7 +39,7 @@ export async function addTestSubscription() {
 }
 
 export async function addSubscriptions(
-  formData: subscriptionInsertTypeWithoutUserId
+  formData: subscriptionInsertTypeWithoutUserId,
 ) {
   const session = await auth();
   console.log("session", session);
@@ -160,7 +160,7 @@ export async function deleteSubscription(id: number) {
 
 export async function updateSubscription(
   id: number,
-  formData: subscriptionInsertTypeWithoutUserId
+  formData: subscriptionInsertTypeWithoutUserId,
 ) {
   const session = await auth();
   if (!session) {
