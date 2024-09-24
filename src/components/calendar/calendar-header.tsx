@@ -15,6 +15,8 @@ type CalendarHeaderProps = {
   onPrevMonth: () => void;
   onNextMonth: () => void;
   slideDirection: "up" | "down";
+  totalMoneySpent: number;
+  onTotalMoneyClick: () => void;
 };
 
 export function CalendarHeader({
@@ -22,8 +24,9 @@ export function CalendarHeader({
   onPrevMonth,
   onNextMonth,
   slideDirection,
+  totalMoneySpent,
+  onTotalMoneyClick,
 }: CalendarHeaderProps) {
-  // Create springs for month and year values
   const monthSpring = useSpring(currentMonth.getMonth(), {
     stiffness: 100,
     damping: 20,
@@ -33,35 +36,65 @@ export function CalendarHeader({
     damping: 20,
   });
 
-  // Transform the spring values to display
+  const totalMoneySpentSpring = useSpring(totalMoneySpent, {
+    stiffness: 100,
+    damping: 20,
+  });
+
   const monthDisplay = useTransform(monthSpring, (current) =>
     new Date(0, Math.round(current)).toLocaleString("default", {
       month: "long",
     }),
   );
-  const yearDisplay = useTransform(
-    yearSpring,
-    (current) => Math.round(current).toString(), // Removing the comma formatting
+  const yearDisplay = useTransform(yearSpring, (current) =>
+    Math.round(current).toString(),
   );
 
-  // Update springs when currentMonth changes
+  const totalMoneySpentDisplay = useTransform(
+    totalMoneySpentSpring,
+    (current) => current.toFixed(2),
+  );
+
   useEffect(() => {
     monthSpring.set(currentMonth.getMonth());
     yearSpring.set(currentMonth.getFullYear());
-  }, [currentMonth, monthSpring, yearSpring]);
+    totalMoneySpentSpring.set(totalMoneySpent);
+  }, [
+    currentMonth,
+    monthSpring,
+    yearSpring,
+    totalMoneySpent,
+    totalMoneySpentSpring,
+  ]);
 
   return (
-    <div className="flex items-center space-x-4">
-      <Button variant="outline" size="icon" onClick={onPrevMonth}>
-        <ChevronLeft className="h-4 w-4" />
+    <div className="flex items-center justify-between space-x-4 w-full">
+      <div className="flex items-center space-x-2">
+        <Button variant="outline" size="icon" onClick={onPrevMonth}>
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <Button variant="outline" size="icon" onClick={onNextMonth}>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+        <h1 className="sm:text-3xl font-bold space-x-2">
+          <motion.span className={cn("tabular-nums")}>
+            {monthDisplay}
+          </motion.span>{" "}
+          <motion.span className={cn("tabular-nums")}>
+            {yearDisplay}
+          </motion.span>
+        </h1>
+      </div>
+      <Button
+        variant="ghost"
+        className="cursor-pointer"
+        onClick={onTotalMoneyClick}
+      >
+        <span className="text-xl font-bold mr-1">$</span>
+        <motion.span className="text-xl font-bold tabular-nums">
+          {totalMoneySpentDisplay}
+        </motion.span>
       </Button>
-      <Button variant="outline" size="icon" onClick={onNextMonth}>
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-      <h1 className="sm:text-3xl font-bold space-x-2">
-        <motion.span className={cn("tabular-nums")}>{monthDisplay}</motion.span>{" "}
-        <motion.span className={cn("tabular-nums")}>{yearDisplay}</motion.span>
-      </h1>
     </div>
   );
 }

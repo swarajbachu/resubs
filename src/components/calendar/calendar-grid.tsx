@@ -3,11 +3,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import NetflixLogo from "@/components/logo/netflix";
-import Spotify from "@/components/logo/spotify";
-import YoutubeLogo from "@/components/logo/youtube";
-import AppleLogo from "@/components/logo/apple";
-import GameLogo from "@/components/logo/game";
+
 import SubscriptionDetails from "./subscription-details";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import {
@@ -22,32 +18,30 @@ import {
   updateSubscription,
 } from "@/server/actions/subscriptions";
 import { toast } from "sonner";
-
-const platformIcons = {
-  netflix: NetflixLogo,
-  spotify: Spotify,
-  youtube: YoutubeLogo,
-  apple: AppleLogo,
-  games: GameLogo,
-};
+import platformOptions from "@/lib/platforms";
+import { CircleArrowOutUpRight } from "lucide-react";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 type CalendarGridProps = {
   calendarDays: Date[];
-  // subscriptions: subscriptionSelectType[];
+  subscriptions: subscriptionSelectType[];
   isDragging: boolean;
 };
 
-export function CalendarGrid({ calendarDays, isDragging }: CalendarGridProps) {
+export function CalendarGrid({
+  calendarDays,
+  isDragging,
+  subscriptions: allSubscriptions,
+}: CalendarGridProps) {
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   const queryClient = useQueryClient();
 
-  const { data: allSubscriptions } = useQuery({
-    queryKey: ["subscriptions"],
-    queryFn: () => getAllSubscriptions(),
-  });
+  // const { data: allSubscriptions } = useQuery({
+  //   queryKey: ["subscriptions"],
+  //   queryFn: () => getAllSubscriptions(),
+  // });
 
   const { mutateAsync: updateSubscriptionMutation } = useMutation({
     mutationFn: (sub: subscriptionInsertTypeWithoutUserId) =>
@@ -150,7 +144,9 @@ const renderSubscriptionIcons = (
   return (
     <div className="flex gap-1 flex-wrap items-center justify-center">
       {iconsToShow.map((sub) => {
-        const Icon = platformIcons[sub.platform as keyof typeof platformIcons];
+        const Icon =
+          platformOptions.find((platform) => platform.value === sub.platform)
+            ?.icon ?? CircleArrowOutUpRight;
         return <Icon key={sub.id} className="sm:w-6" />;
       })}
       {remainingCount > 0 && (

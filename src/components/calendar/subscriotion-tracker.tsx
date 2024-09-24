@@ -5,17 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { addSubscriptions } from "@/server/actions/subscriptions";
+import {
+  addSubscriptions,
+  getAllSubscriptions,
+} from "@/server/actions/subscriptions";
 import { AddSubscriptionDialog } from "./add-subscription-dialog";
 import { CalendarHeader } from "./calendar-header";
-import { CalendarGrid } from "./calendar-grid";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import type {
-  subscriptionInsertType,
   subscriptionInsertTypeWithoutUserId,
   subscriptionSelectType,
 } from "@/server/db/schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { CalendarGrid } from "./calendar-grid";
+import { MonthlySubscriptionOverview } from "../analytics/analytics";
 
 export function SubscriptionTracker() {
   const [subscriptions, setSubscriptions] = useState<
@@ -24,6 +27,18 @@ export function SubscriptionTracker() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calendarDays, setCalendarDays] = useState<Date[]>([]);
   const [slideDirection, setSlideDirection] = useState<"up" | "down">("down");
+  const [view, setView] = useState<"calendar" | "analytics">("calendar");
+
+  const { data: fetchedSubscriptions } = useQuery({
+    queryKey: ["subscriptions"],
+    queryFn: () => getAllSubscriptions(),
+  });
+
+  useEffect(() => {
+    if (fetchedSubscriptions) {
+      setSubscriptions(fetchedSubscriptions);
+    }
+  }, [fetchedSubscriptions]);
 
   useEffect(() => {
     const year = currentMonth.getFullYear();
@@ -71,26 +86,41 @@ export function SubscriptionTracker() {
     });
   };
 
+  const totalMoneySpent = subscriptions
+    .filter((sub) => {
+      const startDate = new Date(sub.startDate);
+      const endDate = sub.endDate ? new Date(sub.endDate) : null;
+      return (
+        startDate <= currentMonth &&
+        (endDate === null || endDate >= currentMonth) &&
+        sub.isActive
+      );
+    })
+    .reduce((total, sub) => total + Number.parseFloat(sub.price), 0);
+
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      <div className="flex justify-between sm:flex-row flex-col items-start gap-2 sm:items-center mb-2 sm:mb-6 sm:px-6">
-        <CalendarHeader
-          slideDirection={slideDirection}
-          currentMonth={currentMonth}
-          onPrevMonth={() => changeMonth(-1)}
-          onNextMonth={() => changeMonth(1)}
-        />
-        <div className="fixed bottom-4 right-16">
-          <AddSubscriptionDialog onAddSubscription={addSubscriptionFunction} />
-        </div>
+      <CalendarHeader
+        slideDirection={slideDirection}
+        currentMonth={currentMonth}
+        onPrevMonth={() => changeMonth(-1)}
+        onNextMonth={() => changeMonth(1)}
+        totalMoneySpent={totalMoneySpent}
+        onTotalMoneyClick={() =>
+          setView(view === "analytics" ? "calendar" : "analytics")
+        }
+      />
+      <div className="fixed bottom-4 right-16">
+        <AddSubscriptionDialog onAddSubscription={addSubscriptionFunction} />
       </div>
       <Card className="bg-background overflow-hidden shadow-none">
         <CardContent className="sm:p-6 p-1">
           <CalendarSwitcher
+            view={view}
             currentMonth={currentMonth}
             slideDirection={slideDirection}
             calendarDays={calendarDays}
-            // subscriptions={subscriptions}
+            subscriptions={fetchedSubscriptions ?? []}
             onChangeMonth={changeMonth}
           />
         </CardContent>
@@ -103,7 +133,8 @@ interface CalendarSwitcherProps {
   currentMonth: Date;
   slideDirection: "up" | "down";
   calendarDays: Date[];
-  // subscriptions: subscriptionSelectType[];
+  view: "calendar" | "analytics";
+  subscriptions: subscriptionSelectType[];
   onChangeMonth: (increment: number) => void;
 }
 
@@ -111,7 +142,9 @@ function CalendarSwitcher({
   currentMonth,
   slideDirection,
   calendarDays,
+  view,
   onChangeMonth,
+  subscriptions,
 }: CalendarSwitcherProps) {
   const controls = useAnimation();
   const [isDragging, setIsDragging] = useState(false);
@@ -146,12 +179,21 @@ function CalendarSwitcher({
         onDragStart={() => setIsDragging(true)}
         onDragEnd={handleDragEnd}
         style={{ touchAction: "none" }}
+        className="h-[68vh] overflow-y-auto"
       >
-        <CalendarGrid
-          calendarDays={calendarDays}
-          // subscriptions={subscriptions}
-          isDragging={isDragging}
-        />
+        {view === "calendar" && (
+          <CalendarGrid
+            calendarDays={calendarDays}
+            subscriptions={subscriptions}
+            isDragging={isDragging}
+          />
+        )}
+        {view === "analytics" && (
+          <MonthlySubscriptionOverview
+            month={currentMonth}
+            subscriptions={subscriptions}
+          />
+        )}
       </motion.div>
     </AnimatePresence>
   );
